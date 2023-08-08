@@ -1,4 +1,4 @@
-package com.agent.main;
+package agent.main;
 
 public class AgentStater {
 
