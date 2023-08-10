@@ -23,7 +23,22 @@
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>9.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>9.5</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -37,7 +52,7 @@
                         <manifestEntries>
                             <Premain-Class>agent.core.JavaAgent</Premain-Class>
                             <Agent-Class>agent.core.JavaAgent</Agent-Class>
-                            <!-- 클래스 재정의 허용 여부 설정  -->
+                            <!-- 클래스 재정의 허용 여부 설정 -->
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <!-- 클래스 재변형 허용 여부 설정 -->
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
@@ -45,27 +60,47 @@
                     </archive>
                 </configuration>
             </plugin>
-            
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.8</version>
-            <executions>
-                <execution>
-                    <id>copy-jar-to-specific-location</id>
-                    <phase>install</phase>
-                    <goals>
-                        <goal>run</goal>
-                    </goals>
-                    <configuration>
-                        <target>
-                            <copy file="${project.build.directory}/${project.build.finalName}.jar" todir="C:\Dev\100. STS\sts-3.9.4.RELEASE" />
-                        </target>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-        
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>copy-jar-to-specific-location</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy
+                                    file="${project.build.directory}/${project.build.finalName}.jar"
+                                    todir="C:\Dev\100. STS\sts-3.9.4.RELEASE" />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

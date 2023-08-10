@@ -23,25 +23,6 @@ public class JavaAgent {
         
         // ClassLoadTimeTransformer 클래스의 인스턴스를 등록
         // 클래스 로딩 시에 변형 로직이 동작하도록 설정하는 역할
-        inst.addTransformer(new ClassLoadTimeTransformer());
-    }
-
-//    private static class ClassLoadTimeTransformer implements java.lang.instrument.ClassFileTransformer {
-//        @Override
-//        public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
-//                                java.security.ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-//            System.out.println("Loading class: " + className);
-//            return classfileBuffer;
-//        }
-//    }
-    
-    private static class ClassLoadTimeTransformer implements java.lang.instrument.ClassFileTransformer {
-        @Override
-        public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
-                                java.security.ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-            System.out.println("class Loading : " + className);
-            
-            return classfileBuffer;
-        }
+        inst.addTransformer(new AgentTransformer());
     }
 }
