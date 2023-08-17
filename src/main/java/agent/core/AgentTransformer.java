@@ -4,8 +4,6 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 
-import org.apache.ibatis.executor.BaseExecutor;
-import org.apache.ibatis.executor.Executor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -58,8 +56,8 @@ public class AgentTransformer implements ClassFileTransformer {
                         mv.visitLdcInsn(className + "." + name + "(" + paramCount + " params)"); // 파라미터 개수를 추가
                         mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
                         
-                        if("query".equals(name) && paramCount == 6) {
-                            //System.out.printf("%s Query : [%s]\n", "[Agent]", sqlQuery);
+                        if( ("query".equals(name) && paramCount == 6) || ("update".equals(name) && paramCount == 2) ) {
+                            //System.out.printf("%s Param : [%s]\n", "[Agent]", param.toString());
                             mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
                             mv.visitLdcInsn("%s Param : [%s]\n");
                             mv.visitInsn(Opcodes.ICONST_2);  // Load integer 2 onto the stack (argument count for the array)
@@ -107,6 +105,13 @@ public class AgentTransformer implements ClassFileTransformer {
                             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "org/apache/ibatis/mapping/BoundSql", "getSql", "()Ljava/lang/String;", false);
                             mv.visitVarInsn(Opcodes.ASTORE, 8); // Store the result (sqlQuery) to a new local variable
 
+                            // Remove all newline characters from 'sqlQuery'
+//                            mv.visitVarInsn(Opcodes.ALOAD, 8);
+//                            mv.visitLdcInsn("\n");
+//                            mv.visitLdcInsn("");
+//                            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/String", "replace", "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;", false);
+//                            mv.visitVarInsn(Opcodes.ASTORE, 8); // Store the modified 'sqlQuery' back
+                            
                             // System.out.printf("%s Query : [%s]\n", "[Agent]", sqlQuery);
                             mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
                             mv.visitLdcInsn("%s Query : [%s]\n"); // Push the format string onto the operand stack
@@ -127,9 +132,6 @@ public class AgentTransformer implements ClassFileTransformer {
 
                             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "printf", "(Ljava/lang/String;[Ljava/lang/Object;)Ljava/io/PrintStream;", false);
                             mv.visitInsn(Opcodes.POP); // Discard the unwanted result from the printf method
-                        }
-                        else if("query".equals(name) && paramCount == 6){
-                            
                         }
                     }
                 };
